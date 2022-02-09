@@ -1,33 +1,18 @@
-import selenium.common.exceptions
-from selenium import webdriver
-from selenium.webdriver.common.by import By
+import requests
+from bs4 import BeautifulSoup
 
 
 def main():
-    url = 'http://google.com/'
-    browser = get_web_driver()
-    browser.get(url)
 
-    try:
-        name = browser.find_element(By.XPATH, '//*[@id="__next"]/main/article/section/div[2]/h1').text
-    except selenium.common.exceptions.NoSuchElementException:
-        name = 'Not Found'
+    r = requests.get('https://www.kabum.com.br/produto/270813/placa-de-video-asus-dual-nvidia-geforce-gtx-1650-oc-4gb'
+                     '-gddr5-preto-90yv0cv2-m0na00').text
+    soup = BeautifulSoup(r, 'html.parser')
 
-    try:
-        price = browser.find_element(By.XPATH, '//*[@id="blocoValores"]/div[3]/b').text\
-            .replace("R$ ", "").replace(".", "").replace(",", ".")
-    except selenium.common.exceptions.NoSuchElementException:
-        price = 'Not Found'
+    name = soup.title.string
+    price = soup.find(class_="regularPrice").string
 
     print("name: " + name +
           "\nprice: " + price)
-
-
-def get_web_driver():
-    optional = webdriver.ChromeOptions()
-    optional.headless = True
-    driver = webdriver.Chrome(options=optional)
-    return driver
 
 
 if __name__ == '__main__':
